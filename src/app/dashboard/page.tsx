@@ -1,7 +1,14 @@
-import { FaChalkboardTeacher, FaUserFriends, FaChartLine, FaCog, FaBell, FaSignOutAlt } from "react-icons/fa";
+import { 
+  FaChalkboardTeacher, 
+  FaUserFriends, 
+  FaChartLine, 
+  FaCog, 
+  FaBell, 
+  FaSignOutAlt 
+} from "react-icons/fa";
+import Link from "next/link";
 
 export default function DashboardPage() {
-  // Sample data
   const attendanceStats = [
     { class: "Grade 7A", present: 28, absent: 2, percentage: 93 },
     { class: "Grade 8B", present: 25, absent: 5, percentage: 83 },
@@ -18,7 +25,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
       <div className="w-64 bg-indigo-800 text-white min-h-screen p-4">
         <div className="flex items-center space-x-3 p-4 border-b border-indigo-700 pb-6">
           <div className="bg-indigo-600 p-2 rounded-lg">
@@ -30,43 +36,41 @@ export default function DashboardPage() {
         <nav className="mt-8">
           <ul className="space-y-2">
             <li>
-              <a href="#" className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg">
+              <Link href="/dashboard" className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg">
                 <FaChalkboardTeacher />
                 <span>Dashboard</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+              <Link href="/students" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
                 <FaUserFriends />
                 <span>Students</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+              <Link href="/reports" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
                 <FaChartLine />
                 <span>Reports</span>
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+              <Link href="/settings" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
                 <FaCog />
                 <span>Settings</span>
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
         
         <div className="absolute bottom-0 left-0 w-64 p-4 border-t border-indigo-700">
-          <a href="#" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+          <Link href="/login" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
             <FaSignOutAlt />
             <span>Logout</span>
-          </a>
+          </Link>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 p-8">
-        {/* Header */}
         <header className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold text-gray-800">Attendance Dashboard</h1>
           <div className="flex items-center space-x-4">
@@ -83,7 +87,6 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white p-6 rounded-xl shadow border-l-4 border-indigo-500">
             <h3 className="text-gray-600 text-sm mb-2">Total Students</h3>
@@ -103,7 +106,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Class Attendance */}
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-gray-800">Class Attendance Today</h2>
@@ -152,7 +154,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-6">Recent Activity</h2>

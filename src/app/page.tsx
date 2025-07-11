@@ -3,7 +3,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Navigation Bar */}
       <nav className="bg-white shadow-md py-4 px-6 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
@@ -19,7 +18,6 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center">
         <div className="md:w-1/2 mb-12 md:mb-0">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
@@ -51,7 +49,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="bg-white py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">Key Features</h2>
@@ -76,7 +73,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-gray-800 text-white py-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
