@@ -8,6 +8,7 @@ import {
   FaCheckCircle,
   FaSignOutAlt,
   FaUserGraduate,
+  FaChalkboardTeacher,
   FaBell,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -17,7 +18,9 @@ import Link from "next/link";
 export default function StudentDashboard() {
   const router = useRouter();
   const { courses, markAttendance } = useCourses();
-  const [selectedCourse, setSelectedCourse] = useState<string>(courses[0]?.code || "");
+  const [selectedCourse, setSelectedCourse] = useState<string>(
+    courses[0]?.code || ""
+  );
 
   const activeCourse = courses.find((c) => c.code === selectedCourse);
 
@@ -38,31 +41,45 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
+
       <aside className="w-72 bg-indigo-800 text-white flex flex-col">
+        <div className="flex items-center space-x-3 p-4 border-b border-indigo-700 pb-6">
+          <div className="bg-indigo-600 p-2 rounded-lg">
+            <FaChalkboardTeacher className="text-xl" />
+          </div>
+          <Link
+            href="/student/dashboard"
+            className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg"
+          >
+            <h2 className="text-xl font-bold">AcademyPlus</h2>
+          </Link>
+        </div>
         <div className="p-4 text-center border-b border-indigo-600">
+          <Link
+            href="/student/courses/register"
+            className="flex items-center p-3 bg-green-700 rounded-lg"
+          >
+            <h2 className="text-sm text-center font-bold flex items-center justify-center">
+              register new courses
+            </h2>
+          </Link>
+        </div>
+
+        <div className="p-4 text-center">
           <h2 className="text-lg font-bold flex items-center justify-center gap-2">
             <FaUserGraduate /> My Courses
           </h2>
         </div>
-         <div className="p-4 text-center border-b border-indigo-600">
-             <Link
-            href="/student/courses/register"
-            className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg"
-          >
-            {/* <h2 className="text-xl font-bold">AcademyPlus</h2> */}
-            <h2 className="text-lg font-bold flex items-center justify-center gap-2">
-            register new courses
-          </h2>
-          </Link>
-          
-        </div>
+
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {courses.map((course) => (
             <button
               key={course.code}
               onClick={() => setSelectedCourse(course.code)}
               className={`w-full text-left px-3 py-2 rounded-md flex justify-between items-center ${
-                selectedCourse === course.code ? "bg-indigo-500" : "hover:bg-indigo-600"
+                selectedCourse === course.code
+                  ? "bg-indigo-500"
+                  : "hover:bg-indigo-600"
               }`}
             >
               <span>
@@ -106,7 +123,8 @@ export default function StudentDashboard() {
             {/* Attendance History */}
             <div className="bg-white rounded-xl shadow-md p-6 mb-6">
               <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                <FaCalendarCheck className="text-indigo-600" /> Attendance History
+                <FaCalendarCheck className="text-indigo-600" /> Attendance
+                History
               </h2>
               <table className="w-full text-left border">
                 <thead>
@@ -121,7 +139,9 @@ export default function StudentDashboard() {
                       <td className="p-2 border">{entry.date}</td>
                       <td
                         className={`p-2 border font-medium ${
-                          entry.status === "Present" ? "text-green-600" : "text-red-600"
+                          entry.status === "Present"
+                            ? "text-green-600"
+                            : "text-red-600"
                         }`}
                       >
                         {entry.status}
@@ -134,7 +154,9 @@ export default function StudentDashboard() {
 
             {/* Mark Attendance */}
             <div className="bg-white rounded-xl shadow-md p-6 flex justify-between items-center">
-              <p className="text-gray-700">Mark your attendance for today’s class</p>
+              <p className="text-gray-700">
+                Mark your attendance for today’s class
+              </p>
               <button
                 onClick={handleMarkAttendance}
                 className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
