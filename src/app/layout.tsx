@@ -1,12 +1,12 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'School Attendance System',
-  description: 'Manage student attendance efficiently',
+  title: "School Attendance System",
+  description: "Manage student attendance efficiently",
 };
 
 export default function RootLayout({
