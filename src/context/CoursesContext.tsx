@@ -45,7 +45,7 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
       ],
     },
       {
-      code: "MTH102",
+      code: "MTH103",
       name: "Calculus II",
       attendance: 85,
       history: [
@@ -54,7 +54,7 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
       ],
     },
       {
-      code: "MTH102",
+      code: "MTH104",
       name: "Calculus II",
       attendance: 85,
       history: [

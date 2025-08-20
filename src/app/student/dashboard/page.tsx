@@ -67,7 +67,7 @@ export default function DashboardPage() {
           <ul className="space-y-2">
             <li>
               <Link
-                href="/dashboard"
+                href="/student/dashboard"
                 className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg"
               >
                 <FaChalkboardTeacher />
