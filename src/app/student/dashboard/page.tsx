@@ -1,10 +1,10 @@
-import { 
-  FaChalkboardTeacher, 
-  FaUserFriends, 
-  FaChartLine, 
-  FaCog, 
-  FaBell, 
-  FaSignOutAlt 
+import {
+  FaChalkboardTeacher,
+  FaUserFriends,
+  FaChartLine,
+  FaCog,
+  FaBell,
+  FaSignOutAlt,
 } from "react-icons/fa";
 import Link from "next/link";
 
@@ -33,8 +33,18 @@ export default function DashboardPage() {
   const recentActivity: Activity[] = [
     { student: "John Doe", class: "7A", status: "Late", time: "08:15 AM" },
     { student: "Sarah Smith", class: "8B", status: "Absent", time: "08:30 AM" },
-    { student: "Mike Johnson", class: "9C", status: "Present", time: "08:05 AM" },
-    { student: "Emily Davis", class: "10D", status: "Present", time: "08:10 AM" },
+    {
+      student: "Mike Johnson",
+      class: "9C",
+      status: "Present",
+      time: "08:05 AM",
+    },
+    {
+      student: "Emily Davis",
+      class: "10D",
+      status: "Present",
+      time: "08:10 AM",
+    },
   ];
 
   return (
@@ -45,40 +55,60 @@ export default function DashboardPage() {
           <div className="bg-indigo-600 p-2 rounded-lg">
             <FaChalkboardTeacher className="text-xl" />
           </div>
-          <h2 className="text-xl font-bold">AcademyPlus</h2>
+          <Link
+            href="/student/dashboard"
+            className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg"
+          >
+            <h2 className="text-xl font-bold">AcademyPlus</h2>
+          </Link>
         </div>
-        
+
         <nav className="mt-8">
           <ul className="space-y-2">
             <li>
-              <Link href="/dashboard" className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg">
+              <Link
+                href="/dashboard"
+                className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg"
+              >
                 <FaChalkboardTeacher />
                 <span>Dashboard</span>
               </Link>
             </li>
             <li>
-              <Link href="/student/courses" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+              <Link
+                href="/student/courses"
+                className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition"
+              >
                 <FaUserFriends />
                 <span>courses</span>
               </Link>
             </li>
             <li>
-              <Link href="students/reports" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+              <Link
+                href="students/reports"
+                className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition"
+              >
                 <FaChartLine />
                 <span>Reports</span>
               </Link>
             </li>
             <li>
-              <Link href="/settings" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+              <Link
+                href="/settings"
+                className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition"
+              >
                 <FaCog />
                 <span>Settings</span>
               </Link>
             </li>
           </ul>
         </nav>
-        
+
         <div className="absolute bottom-0 left-0 w-64 p-4 border-t border-indigo-700">
-          <Link href="/login" className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition">
+          <Link
+            href="/login"
+            className="flex items-center space-x-3 p-3 hover:bg-indigo-700 rounded-lg transition"
+          >
             <FaSignOutAlt />
             <span>Logout</span>
           </Link>
@@ -89,7 +119,9 @@ export default function DashboardPage() {
       <div className="flex-1 p-8">
         {/* Header */}
         <header className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Attendance Dashboard</h1>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Attendance Dashboard
+          </h1>
           <div className="flex items-center space-x-4">
             <button className="relative p-2 text-gray-600 hover:text-gray-900">
               <FaBell className="text-xl" />
@@ -129,12 +161,14 @@ export default function DashboardPage() {
         {/* Class Attendance Table */}
         <div className="bg-white rounded-xl shadow p-6 mb-8">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800">Class Attendance Today</h2>
+            <h2 className="text-xl font-bold text-gray-800">
+              Class Attendance Today
+            </h2>
             <button className="text-indigo-600 hover:text-indigo-800 font-medium">
               View All
             </button>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -155,8 +189,8 @@ export default function DashboardPage() {
                     <td className="py-4">
                       <div className="flex items-center">
                         <div className="w-32 bg-gray-200 rounded-full h-2.5 mr-2">
-                          <div 
-                            className="bg-indigo-600 h-2.5 rounded-full" 
+                          <div
+                            className="bg-indigo-600 h-2.5 rounded-full"
                             style={{ width: `${stat.percentage}%` }}
                           ></div>
                         </div>
@@ -179,11 +213,13 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activity */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Recent Activity</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Recent Activity
+            </h2>
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="flex items-start border-b border-gray-100 pb-4 last:border-0 last:pb-0"
                 >
                   <div
@@ -215,7 +251,9 @@ export default function DashboardPage() {
 
           {/* Attendance Overview Placeholder */}
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Attendance Overview</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-6">
+              Attendance Overview
+            </h2>
             <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-64" />
           </div>
         </div>
