@@ -38,9 +38,7 @@ export default function StudentDashboard() {
     try {
       markAttendance(activeCourse.code, method);
       toast.success(
-        `Attendance marked via ${
-          method.charAt(0).toUpperCase() + method.slice(1)
-        } for ${activeCourse.code}`
+        `Attendance marked via ${method.charAt(0).toUpperCase() + method.slice(1)} for ${activeCourse.code}`
       );
     } catch (err) {
       toast.error("Failed to mark attendance. Try again.");
@@ -56,9 +54,7 @@ export default function StudentDashboard() {
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
-        ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 flex flex-col`}
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 flex flex-col`}
       >
         {/* Logo */}
         <div className="flex items-center space-x-3 p-4 border-b">
@@ -73,7 +69,7 @@ export default function StudentDashboard() {
           </Link>
         </div>
 
-        {/* Register new courses */}
+        {/* Register Courses */}
         <div className="p-4 border-b">
           <Link
             href="/student/courses/register"
@@ -98,7 +94,7 @@ export default function StudentDashboard() {
               role="menuitem"
               onClick={() => {
                 setSelectedCourse(course.code);
-                setSidebarOpen(false); // Auto close on mobile
+                setSidebarOpen(false); // Close sidebar on mobile
               }}
               className={`w-full text-left px-3 py-2 rounded-md flex justify-between items-center transition ${
                 selectedCourse === course.code
@@ -124,6 +120,7 @@ export default function StudentDashboard() {
               </span>
             </button>
           ))}
+
           {/* Logout */}
           <div className="p-4 border-t">
             <button
@@ -136,6 +133,7 @@ export default function StudentDashboard() {
         </nav>
       </aside>
 
+      {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
@@ -162,10 +160,10 @@ export default function StudentDashboard() {
         {activeCourse ? (
           <div className="space-y-6">
             {/* Course Header */}
-            <h1 className="text-xl sm:text-lg font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2 overflow-hidden">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2 overflow-hidden">
               <FaBookOpen className="text-blue-600" />
               <span className="truncate overflow-hidden">
-                {activeCourse.code} - {activeCourse.name} hakjhjkdhajs sljsdklfjaslkdjfla
+                {activeCourse.code} - {activeCourse.name}
               </span>
             </h1>
 
@@ -174,11 +172,12 @@ export default function StudentDashboard() {
               <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-gray-700">
                 <FaCalendarCheck className="text-blue-600" /> Attendance History
               </h2>
-              {/* Responsive Table */}
+
+              {/* Desktop Table */}
               <div className="hidden sm:block overflow-x-auto">
                 <table className="w-full min-w-[360px] text-left border text-sm sm:text-base">
                   <thead>
-                    <tr className="bg-gray-100 text-gray-700">
+                    <tr className="bg-gray-100 text-gray-800">
                       <th className="p-2 border">Date</th>
                       <th className="p-2 border">Status</th>
                       <th className="p-2 border">Method</th>
@@ -198,18 +197,16 @@ export default function StudentDashboard() {
                           {entry.status}
                         </td>
                         <td className="p-2 border text-gray-600 capitalize">
-                          {entry.method
-                            ? entry.method.charAt(0).toUpperCase() +
-                              entry.method.slice(1)
-                            : "N/A"}
+                          {entry.method || "N/A"}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              {/* Card-Style Layout for Mobile */}
-              <div className="sm:hidden flex flex-col gap-4">
+
+              {/* Mobile Card */}
+              <div className="sm:hidden text-gray-600 flex flex-col gap-4">
                 {activeCourse.history.map((entry, i) => (
                   <div
                     key={i}
@@ -233,9 +230,7 @@ export default function StudentDashboard() {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="font-semibold">Method:</span>
-                      <span className="capitalize">
-                        {entry.method || "N/A"}
-                      </span>
+                      <span className="capitalize">{entry.method || "N/A"}</span>
                     </div>
                   </div>
                 ))}

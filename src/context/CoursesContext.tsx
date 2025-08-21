@@ -1,12 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-
-export type AttendanceStatus = "Present" | "Absent";
+import { toast } from "react-hot-toast";
 
 export type AttendanceRecord = {
   date: string;
-  status: AttendanceStatus;
+  status: "Present" | "Absent";
+  method?: "biometric" | "qrcode";
 };
 
 export type Course = {
@@ -18,15 +18,19 @@ export type Course = {
 
 type CoursesContextType = {
   courses: Course[];
-  addCourse: (course: Course) => void;
-  markAttendance: (courseCode: string) => void;
+  markAttendance: (courseCode: string, method: "biometric" | "qrcode") => void;
 };
 
-const CoursesContext = createContext<CoursesContextType | undefined>(undefined);
+const CoursesContext = createContext<CoursesContextType>({
+  courses: [],
+  markAttendance: () => {},
+});
+
+export const useCourses = () => useContext(CoursesContext);
 
 export const CoursesProvider = ({ children }: { children: ReactNode }) => {
   const [courses, setCourses] = useState<Course[]>([
-    {
+     {
       code: "CSC101",
       name: "programming 101",
       attendance: 92,
@@ -64,34 +68,39 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
     },
   ]);
 
-  const addCourse = (course: Course) => {
-    setCourses((prev) => [...prev, course]);
-  };
 
-  const markAttendance = (courseCode: string) => {
-    const today = new Date().toISOString().split("T")[0];
+  const markAttendance = (courseCode: string, method: "biometric" | "qrcode") => {
     setCourses((prev) =>
-      prev.map((c) =>
-        c.code === courseCode && !c.history.some((h) => h.date === today)
-          ? {
-              ...c,
-              history: [...c.history, { date: today, status: "Present" }],
-              attendance: Math.min(100, c.attendance + 2),
-            }
-          : c
-      )
+      prev.map((course) => {
+        if (course.code === courseCode) {
+          const today = new Date().toISOString().split("T")[0];
+          if (course.history.some((h) => h.date === today)) {
+            toast.error("Attendance already marked today.");
+            return course;
+          }
+          const newHistory: AttendanceRecord = {
+            date: today,
+            status: "Present",
+            method,
+          };
+          const newAttendance = Math.min(
+            100,
+            Math.round(((course.history.length + 1) / (course.history.length + 1)) * 100)
+          );
+          return {
+            ...course,
+            history: [...course.history, newHistory],
+            attendance: newAttendance,
+          };
+        }
+        return course;
+      })
     );
   };
 
   return (
-    <CoursesContext.Provider value={{ courses, addCourse, markAttendance }}>
+    <CoursesContext.Provider value={{ courses, markAttendance }}>
       {children}
     </CoursesContext.Provider>
   );
-};
-
-export const useCourses = () => {
-  const context = useContext(CoursesContext);
-  if (!context) throw new Error("useCourses must be used within CoursesProvider");
-  return context;
 };
