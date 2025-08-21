@@ -1,19 +1,18 @@
-// dev/ams/src/app/student/dashboard/page.tsx
 "use client";
 
 import { useState } from "react";
 import {
   FaBookOpen,
   FaCalendarCheck,
-  FaCheckCircle,
   FaSignOutAlt,
   FaUserGraduate,
   FaChalkboardTeacher,
-  FaBell,
+  FaBars,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useCourses } from "../../../context/CoursesContext";
 import Link from "next/link";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function StudentDashboard() {
   const router = useRouter();
@@ -21,10 +20,10 @@ export default function StudentDashboard() {
   const [selectedCourse, setSelectedCourse] = useState<string>(
     courses[0]?.code || ""
   );
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const activeCourse = courses.find((c) => c.code === selectedCourse);
 
-  // Updated handle function with method type
   const handleMarkAttendance = (method: "biometric" | "qrcode") => {
     if (!activeCourse) return;
 
@@ -32,110 +31,140 @@ export default function StudentDashboard() {
     const alreadyMarked = activeCourse.history.some((h) => h.date === today);
 
     if (alreadyMarked) {
-      alert("Attendance already marked for today.");
+      toast.error("Attendance already marked for today.");
       return;
     }
 
-    markAttendance(activeCourse.code, method);
-    alert(
-      `Attendance marked via ${method.toUpperCase()} for ${activeCourse.code}`
-    );
+    try {
+      markAttendance(activeCourse.code, method);
+      toast.success(
+        `Attendance marked via ${method.charAt(0).toUpperCase() + method.slice(1)} for ${activeCourse.code}`
+      );
+    } catch (err) {
+      toast.error("Failed to mark attendance. Try again.");
+    }
   };
 
   const handleLogout = () => router.push("/login");
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gray-100">
+      <Toaster position="top-right" />
+
       {/* Sidebar */}
-      <aside className="w-72 bg-indigo-800 text-white flex flex-col">
-        <div className="flex items-center space-x-3 p-4 border-b border-indigo-700 pb-6">
-          <div className="bg-indigo-600 p-2 rounded-lg">
-            <FaChalkboardTeacher className="text-xl" />
-          </div>
+      <aside
+        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 flex flex-col`}
+      >
+        {/* Logo */}
+        <div className="flex items-center space-x-3 p-4 border-b">
           <Link
             href="/student/dashboard"
-            className="flex items-center space-x-3 p-3 bg-indigo-700 rounded-lg"
+            className="flex items-center gap-2 text-gray-800 hover:text-blue-600 transition"
           >
-            <h2 className="text-xl font-bold">AcademyPlus</h2>
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <FaChalkboardTeacher className="text-blue-600 text-xl" />
+            </div>
+            <h2 className="text-lg font-bold">AcademyPlus</h2>
           </Link>
         </div>
 
         {/* Register new courses */}
-        <div className="p-4 text-center border-b border-indigo-600">
+        <div className="p-4 border-b">
           <Link
             href="/student/courses/register"
-            className="flex items-center p-3 bg-green-700 rounded-lg"
+            className="flex items-center justify-center gap-2 p-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
           >
-            <h2 className="text-sm text-center font-bold flex items-center justify-center">
-              Register New Courses
-            </h2>
+            <span className="text-sm font-bold">Register New Courses</span>
           </Link>
         </div>
 
         {/* My Courses */}
         <div className="p-4 text-center">
-          <h2 className="text-lg font-bold flex items-center justify-center gap-2">
+          <h2 className="text-md font-semibold flex items-center justify-center gap-2 text-gray-700">
             <FaUserGraduate /> My Courses
           </h2>
         </div>
 
+        {/* Courses List */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {courses.map((course) => (
             <button
               key={course.code}
-              onClick={() => setSelectedCourse(course.code)}
-              className={`w-full text-left px-3 py-2 rounded-md flex justify-between items-center ${
+              role="menuitem"
+              onClick={() => {
+                setSelectedCourse(course.code);
+                setSidebarOpen(false); // Auto close on mobile
+              }}
+              className={`w-full text-left px-3 py-2 rounded-md flex justify-between items-center transition ${
                 selectedCourse === course.code
-                  ? "bg-indigo-500"
-                  : "hover:bg-indigo-600"
+                  ? "bg-blue-100 text-blue-700 font-semibold"
+                  : "hover:bg-gray-100"
               }`}
             >
               <span>
                 {course.code}
                 <br />
-                <span className="text-xs text-indigo-200">{course.name}</span>
+                <span className="text-xs text-gray-500">{course.name}</span>
               </span>
               <span
                 className={`text-sm font-bold ${
                   course.attendance >= 80
-                    ? "text-green-300"
+                    ? "text-green-600"
                     : course.attendance >= 60
-                    ? "text-yellow-300"
-                    : "text-red-300"
+                    ? "text-yellow-600"
+                    : "text-red-600"
                 }`}
               >
                 {course.attendance}%
               </span>
             </button>
           ))}
-        </nav>
-
-        <div className="p-4 border-t border-indigo-600">
+              {/* Logout */}
+        <div className="p-4 border-t">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 bg-indigo-600 px-3 py-2 rounded hover:bg-indigo-500"
+            className="w-full flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
           >
             <FaSignOutAlt /> Logout
           </button>
         </div>
+        </nav>
+
+    
       </aside>
 
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
       {/* Main Content */}
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 sm:p-6 md:p-8">
+        {/* Mobile Toggle */}
+                 <button
+                   className="md:hidden text-gray-700"
+                   onClick={() => setSidebarOpen(true)}
+                 >
+                   <FaBars size={20} />
+                 </button>
+
         {activeCourse ? (
-          <>
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2 mb-6">
-              <FaBookOpen className="text-indigo-600" />
+          <div className="space-y-6">
+            {/* Course Header */}
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+              <FaBookOpen className="text-blue-600" />
               {activeCourse.code} - {activeCourse.name}
             </h1>
 
             {/* Attendance History */}
-            <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-              <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-                <FaCalendarCheck className="text-indigo-600" /> Attendance
-                History
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 overflow-x-auto">
+              <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-gray-700">
+                <FaCalendarCheck className="text-blue-600" /> Attendance History
               </h2>
-              <table className="w-full text-left border">
+              <table className="w-full min-w-[400px] text-left border text-sm sm:text-base">
                 <thead>
                   <tr className="bg-gray-100 text-gray-700">
                     <th className="p-2 border">Date</th>
@@ -145,7 +174,7 @@ export default function StudentDashboard() {
                 </thead>
                 <tbody>
                   {activeCourse.history.map((entry, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
+                    <tr key={i} className="hover:bg-gray-50 transition">
                       <td className="p-2 border">{entry.date}</td>
                       <td
                         className={`p-2 border font-medium ${
@@ -156,8 +185,11 @@ export default function StudentDashboard() {
                       >
                         {entry.status}
                       </td>
-                      <td className="p-2 border text-sm text-gray-600 capitalize">
-                        {entry.method || "N/A"}
+                      <td className="p-2 border text-gray-600 capitalize">
+                        {entry.method
+                          ? entry.method.charAt(0).toUpperCase() +
+                            entry.method.slice(1)
+                          : "N/A"}
                       </td>
                     </tr>
                   ))}
@@ -166,26 +198,26 @@ export default function StudentDashboard() {
             </div>
 
             {/* Mark Attendance */}
-            <div className="bg-white rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-gray-700">
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+              <p className="text-gray-700 text-center sm:text-left">
                 Mark your attendance for today’s class
               </p>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => handleMarkAttendance("biometric")}
-                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                  className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
                 >
                   Biometric
                 </button>
                 <button
                   onClick={() => handleMarkAttendance("qrcode")}
-                  className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                  className="flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition w-full sm:w-auto"
                 >
                   QR Code
                 </button>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           <p className="text-gray-600">Select a course from the sidebar</p>
         )}
