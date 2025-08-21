@@ -38,7 +38,9 @@ export default function StudentDashboard() {
     try {
       markAttendance(activeCourse.code, method);
       toast.success(
-        `Attendance marked via ${method.charAt(0).toUpperCase() + method.slice(1)} for ${activeCourse.code}`
+        `Attendance marked via ${
+          method.charAt(0).toUpperCase() + method.slice(1)
+        } for ${activeCourse.code}`
       );
     } catch (err) {
       toast.error("Failed to mark attendance. Try again.");
@@ -54,7 +56,9 @@ export default function StudentDashboard() {
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 flex flex-col`}
+        ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:translate-x-0 flex flex-col`}
       >
         {/* Logo */}
         <div className="flex items-center space-x-3 p-4 border-b">
@@ -120,18 +124,16 @@ export default function StudentDashboard() {
               </span>
             </button>
           ))}
-              {/* Logout */}
-        <div className="p-4 border-t">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
-          >
-            <FaSignOutAlt /> Logout
-          </button>
-        </div>
+          {/* Logout */}
+          <div className="p-4 border-t">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
+            >
+              <FaSignOutAlt /> Logout
+            </button>
+          </div>
         </nav>
-
-    
       </aside>
 
       {sidebarOpen && (
@@ -144,19 +146,27 @@ export default function StudentDashboard() {
       {/* Main Content */}
       <main className="flex-1 p-4 sm:p-6 md:p-8">
         {/* Mobile Toggle */}
-                 <button
-                   className="md:hidden text-gray-700"
-                   onClick={() => setSidebarOpen(true)}
-                 >
-                   <FaBars size={20} />
-                 </button>
+        <div className="flex justify-between items-center mb-4 md:hidden">
+          <button
+            className="text-gray-700 p-2 rounded-md shadow-sm bg-white hover:bg-gray-50 transition"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open sidebar"
+          >
+            <FaBars size={20} />
+          </button>
+          <span className="text-lg font-semibold">
+            {activeCourse?.code || ""}
+          </span>
+        </div>
 
         {activeCourse ? (
           <div className="space-y-6">
             {/* Course Header */}
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-wrap items-center gap-2">
               <FaBookOpen className="text-blue-600" />
-              {activeCourse.code} - {activeCourse.name}
+              <span>
+                {activeCourse.code} - {activeCourse.name}
+              </span>
             </h1>
 
             {/* Attendance History */}
@@ -164,45 +174,47 @@ export default function StudentDashboard() {
               <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-gray-700">
                 <FaCalendarCheck className="text-blue-600" /> Attendance History
               </h2>
-              <table className="w-full min-w-[400px] text-left border text-sm sm:text-base">
-                <thead>
-                  <tr className="bg-gray-100 text-gray-700">
-                    <th className="p-2 border">Date</th>
-                    <th className="p-2 border">Status</th>
-                    <th className="p-2 border">Method</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activeCourse.history.map((entry, i) => (
-                    <tr key={i} className="hover:bg-gray-50 transition">
-                      <td className="p-2 border">{entry.date}</td>
-                      <td
-                        className={`p-2 border font-medium ${
-                          entry.status === "Present"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {entry.status}
-                      </td>
-                      <td className="p-2 border text-gray-600 capitalize">
-                        {entry.method
-                          ? entry.method.charAt(0).toUpperCase() +
-                            entry.method.slice(1)
-                          : "N/A"}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[360px] text-left border text-sm sm:text-base">
+                  <thead>
+                    <tr className="bg-gray-100 text-gray-700">
+                      <th className="p-2 border">Date</th>
+                      <th className="p-2 border">Status</th>
+                      <th className="p-2 border">Method</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {activeCourse.history.map((entry, i) => (
+                      <tr key={i} className="hover:bg-gray-50 transition">
+                        <td className="p-2 border">{entry.date}</td>
+                        <td
+                          className={`p-2 border font-medium ${
+                            entry.status === "Present"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {entry.status}
+                        </td>
+                        <td className="p-2 border text-gray-600 capitalize">
+                          {entry.method
+                            ? entry.method.charAt(0).toUpperCase() +
+                              entry.method.slice(1)
+                            : "N/A"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Mark Attendance */}
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <p className="text-gray-700 text-center sm:text-left">
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row flex-wrap justify-between items-center gap-4">
+              <p className="text-gray-700 text-center sm:text-left flex-1">
                 Mark your attendance for today’s class
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => handleMarkAttendance("biometric")}
                   className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
