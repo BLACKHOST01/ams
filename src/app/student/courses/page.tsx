@@ -154,7 +154,7 @@ export default function StudentDashboard() {
           >
             <FaBars size={20} />
           </button>
-          <span className="text-lg font-semibold">
+          <span className="text-lg font-semibold truncate">
             {activeCourse?.code || ""}
           </span>
         </div>
@@ -162,9 +162,9 @@ export default function StudentDashboard() {
         {activeCourse ? (
           <div className="space-y-6">
             {/* Course Header */}
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-wrap items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2">
               <FaBookOpen className="text-blue-600" />
-              <span>
+              <span className="truncate">
                 {activeCourse.code} - {activeCourse.name}
               </span>
             </h1>
@@ -175,7 +175,7 @@ export default function StudentDashboard() {
                 <FaCalendarCheck className="text-blue-600" /> Attendance History
               </h2>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[360px] text-left border text-sm sm:text-base">
+                <table className="w-full min-w-[300px] text-left border text-sm sm:text-base">
                   <thead>
                     <tr className="bg-gray-100 text-gray-700">
                       <th className="p-2 border">Date</th>
@@ -210,20 +210,20 @@ export default function StudentDashboard() {
             </div>
 
             {/* Mark Attendance */}
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col sm:flex-row flex-wrap justify-between items-center gap-4">
-              <p className="text-gray-700 text-center sm:text-left flex-1">
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col md:flex-row flex-wrap justify-between items-stretch gap-4">
+              <p className="text-gray-700 text-center md:text-left flex-1">
                 Mark your attendance for today’s class
               </p>
               <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full sm:w-auto">
                 <button
                   onClick={() => handleMarkAttendance("biometric")}
-                  className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
                 >
                   Biometric
                 </button>
                 <button
                   onClick={() => handleMarkAttendance("qrcode")}
-                  className="flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition w-full sm:w-auto"
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition w-full sm:w-auto"
                 >
                   QR Code
                 </button>
