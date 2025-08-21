@@ -144,9 +144,9 @@ export default function StudentDashboard() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col p-6 space-y-6">
+      <main className="flex-1 flex flex-col p-4 sm:p-6 md:p-8 space-y-6">
         {/* Mobile Toggle */}
-        <div className="flex justify-between items-center mb-4 md:hidden">
+        <header className="bg-white shadow p-4 flex items-center justify-between md:hidden rounded-md">
           <button
             className="text-gray-700 p-2 rounded-md shadow-sm bg-white hover:bg-gray-50 transition"
             onClick={() => setSidebarOpen(true)}
@@ -157,12 +157,12 @@ export default function StudentDashboard() {
           <span className="text-lg text-blue-800 font-semibold truncate">
             {activeCourse?.code || ""}
           </span>
-        </div>
+        </header>
 
         {activeCourse ? (
           <div className="space-y-6">
             {/* Course Header */}
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2 overflow-hidden">
               <FaBookOpen className="text-blue-600" />
               <span className="truncate">
                 {activeCourse.code} - {activeCourse.name}
@@ -170,12 +170,13 @@ export default function StudentDashboard() {
             </h1>
 
             {/* Attendance History */}
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 overflow-x-auto">
+            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6">
               <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-gray-700">
                 <FaCalendarCheck className="text-blue-600" /> Attendance History
               </h2>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[300px] text-left border text-sm sm:text-base">
+              {/* Responsive Table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full min-w-[360px] text-left border text-sm sm:text-base">
                   <thead>
                     <tr className="bg-gray-100 text-gray-700">
                       <th className="p-2 border">Date</th>
@@ -206,6 +207,38 @@ export default function StudentDashboard() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              {/* Card-Style Layout for Mobile */}
+              <div className="sm:hidden flex flex-col gap-4">
+                {activeCourse.history.map((entry, i) => (
+                  <div
+                    key={i}
+                    className="bg-gray-50 p-3 rounded-lg shadow-sm flex flex-col gap-1"
+                  >
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold">Date:</span>
+                      <span>{entry.date}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold">Status:</span>
+                      <span
+                        className={
+                          entry.status === "Present"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }
+                      >
+                        {entry.status}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold">Method:</span>
+                      <span className="capitalize">
+                        {entry.method || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 

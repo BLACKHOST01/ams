@@ -116,7 +116,7 @@ export default function StudentDashboard() {
           >
             <FaBars size={20} />
           </button>
-          <h1 className="text-lg font-bold">Dashboard</h1>
+          <h1 className="text-lg text-gray-600 font-bold">Dashboard</h1>
           <FaBell className="text-gray-600" />
         </header>
 
