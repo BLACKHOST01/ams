@@ -28,7 +28,7 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
   const [courses, setCourses] = useState<Course[]>([
     {
       code: "CSC101",
-      name: "Introduction to Computer Science",
+      name: "programming 101",
       attendance: 92,
       history: [
         { date: "2025-08-01", status: "Present" },
