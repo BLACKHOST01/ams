@@ -24,16 +24,22 @@ export default function StudentDashboard() {
 
   const activeCourse = courses.find((c) => c.code === selectedCourse);
 
-  const handleMarkAttendance = () => {
+  // Updated handle function with method type
+  const handleMarkAttendance = (method: "biometric" | "qrcode") => {
     if (!activeCourse) return;
+
     const today = new Date().toISOString().split("T")[0];
     const alreadyMarked = activeCourse.history.some((h) => h.date === today);
+
     if (alreadyMarked) {
       alert("Attendance already marked for today.");
       return;
     }
-    markAttendance(activeCourse.code);
-    alert(`Attendance marked for ${activeCourse.code}`);
+
+    markAttendance(activeCourse.code, method);
+    alert(
+      `Attendance marked via ${method.toUpperCase()} for ${activeCourse.code}`
+    );
   };
 
   const handleLogout = () => router.push("/login");
@@ -41,7 +47,6 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
-
       <aside className="w-72 bg-indigo-800 text-white flex flex-col">
         <div className="flex items-center space-x-3 p-4 border-b border-indigo-700 pb-6">
           <div className="bg-indigo-600 p-2 rounded-lg">
@@ -54,17 +59,20 @@ export default function StudentDashboard() {
             <h2 className="text-xl font-bold">AcademyPlus</h2>
           </Link>
         </div>
+
+        {/* Register new courses */}
         <div className="p-4 text-center border-b border-indigo-600">
           <Link
             href="/student/courses/register"
             className="flex items-center p-3 bg-green-700 rounded-lg"
           >
             <h2 className="text-sm text-center font-bold flex items-center justify-center">
-              register new courses
+              Register New Courses
             </h2>
           </Link>
         </div>
 
+        {/* My Courses */}
         <div className="p-4 text-center">
           <h2 className="text-lg font-bold flex items-center justify-center gap-2">
             <FaUserGraduate /> My Courses
@@ -101,6 +109,7 @@ export default function StudentDashboard() {
             </button>
           ))}
         </nav>
+
         <div className="p-4 border-t border-indigo-600">
           <button
             onClick={handleLogout}
@@ -131,6 +140,7 @@ export default function StudentDashboard() {
                   <tr className="bg-gray-100 text-gray-700">
                     <th className="p-2 border">Date</th>
                     <th className="p-2 border">Status</th>
+                    <th className="p-2 border">Method</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -146,6 +156,9 @@ export default function StudentDashboard() {
                       >
                         {entry.status}
                       </td>
+                      <td className="p-2 border text-sm text-gray-600 capitalize">
+                        {entry.method || "N/A"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -153,16 +166,24 @@ export default function StudentDashboard() {
             </div>
 
             {/* Mark Attendance */}
-            <div className="bg-white rounded-xl shadow-md p-6 flex justify-between items-center">
+            <div className="bg-white rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-gray-700">
                 Mark your attendance for today’s class
               </p>
-              <button
-                onClick={handleMarkAttendance}
-                className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-              >
-                <FaCheckCircle /> Mark Attendance
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleMarkAttendance("biometric")}
+                  className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Biometric
+                </button>
+                <button
+                  onClick={() => handleMarkAttendance("qrcode")}
+                  className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                >
+                  QR Code
+                </button>
+              </div>
             </div>
           </>
         ) : (
