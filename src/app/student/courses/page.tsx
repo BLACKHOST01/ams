@@ -162,7 +162,7 @@ export default function StudentDashboard() {
         {activeCourse ? (
           <div className="space-y-6">
             {/* Course Header */}
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2 overflow-hidden">
+            <h1 className="text-xl sm:text-lg font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2 overflow-hidden">
               <FaBookOpen className="text-blue-600" />
               <span className="truncate overflow-hidden">
                 {activeCourse.code} - {activeCourse.name} hakjhjkdhajs sljsdklfjaslkdjfla
