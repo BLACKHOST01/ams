@@ -9,13 +9,15 @@ export const metadata = {
   description: "Manage student attendance efficiently",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <CoursesProvider>
-          {children}
-        </CoursesProvider>
+        <CoursesProvider>{children}</CoursesProvider>
       </body>
     </html>
   );
