@@ -14,12 +14,21 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
+    // ✅ Basic password validation
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long.");
+      return;
+    }
     if (password !== confirm) {
-      alert("Passwords do not match!");
+      setError("Passwords do not match!");
       return;
     }
 
@@ -29,7 +38,7 @@ export default function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          full_name: fullName,
+          fullName, // ✅ camelCase everywhere
           identifier,
           email,
           password,
@@ -40,14 +49,14 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Account created successfully!");
-        router.push("/login");
+        setSuccess("Account created successfully! Redirecting...");
+        setTimeout(() => router.push("/login"), 2000);
       } else {
-        alert(data.error || "Registration failed");
+        setError(data.error || "Registration failed. Try again.");
       }
     } catch (err) {
       console.error("Register error:", err);
-      alert("Something went wrong. Try again.");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -66,6 +75,18 @@ export default function RegisterPage() {
           <p className="text-gray-600 mt-2">Register to access the portal</p>
         </div>
 
+        {/* ✅ Inline feedback messages */}
+        {error && (
+          <div className="mb-4 p-3 text-sm text-red-700 bg-red-100 rounded-lg">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 p-3 text-sm text-green-700 bg-green-100 rounded-lg">
+            {success}
+          </div>
+        )}
+
         <form className="space-y-5" onSubmit={handleRegister}>
           {/* Full Name */}
           <div>
@@ -78,7 +99,8 @@ export default function RegisterPage() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
                 placeholder="John Doe"
                 required
               />
@@ -96,7 +118,8 @@ export default function RegisterPage() {
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
                 placeholder="e.g. ST12345"
                 required
               />
@@ -114,7 +137,8 @@ export default function RegisterPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
                 placeholder="you@school.edu"
                 required
               />
@@ -129,7 +153,8 @@ export default function RegisterPage() {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+              disabled={loading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
               required
             >
               <option value="student">Student</option>
@@ -149,7 +174,8 @@ export default function RegisterPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
                 placeholder="••••••••"
                 required
               />
@@ -167,7 +193,8 @@ export default function RegisterPage() {
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                disabled={loading}
+                className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 disabled:bg-gray-100"
                 placeholder="••••••••"
                 required
               />
@@ -179,7 +206,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-medium"
+              className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 font-medium disabled:opacity-50"
             >
               {loading ? "Creating account..." : "Register"}
             </button>

@@ -5,21 +5,37 @@ import bcrypt from "bcrypt";
 
 export async function POST(req: Request) {
   try {
-    const { fullName, identifier, email, password, role } = await req.json();
+    const body = await req.json();
+    const { fullName, identifier, email, password, role } = body;
 
-    // ✅ Validate input
+    // ✅ Basic validation
     if (!fullName || !identifier || !email || !password || !role) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "All fields are required." },
+        { status: 400 }
+      );
     }
 
-    // ✅ Check if user exists
-    const existing = await pool.query(
-      "SELECT * FROM users WHERE identifier = $1 OR email = $2",
-      [identifier, email]
+    // ✅ Check if email already exists
+    const emailCheck = await pool.query(
+      "SELECT id FROM users WHERE email = $1 LIMIT 1",
+      [email]
     );
-    if (existing.rows.length > 0) {
+    if (emailCheck.rows.length > 0) {
       return NextResponse.json(
-        { error: "User with this email or ID already exists" },
+        { error: "Email is already registered." },
+        { status: 400 }
+      );
+    }
+
+    // ✅ Check if identifier already exists
+    const idCheck = await pool.query(
+      "SELECT id FROM users WHERE identifier = $1 LIMIT 1",
+      [identifier]
+    );
+    if (idCheck.rows.length > 0) {
+      return NextResponse.json(
+        { error: "This Student/Staff ID is already registered." },
         { status: 400 }
       );
     }
@@ -27,20 +43,21 @@ export async function POST(req: Request) {
     // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Insert new user
-    const result = await pool.query(
-      `INSERT INTO users (full_name, identifier, email, password, role)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, full_name, email, role`,
+    // ✅ Insert into DB
+    await pool.query(
+      "INSERT INTO users (full_name, identifier, email, password, role) VALUES ($1, $2, $3, $4, $5)",
       [fullName, identifier, email, hashedPassword, role]
     );
 
     return NextResponse.json(
-      { message: "User created successfully", user: result.rows[0] },
+      { message: "Account created successfully!" },
       { status: 201 }
     );
-  } catch (err) {
-    console.error("Register error:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  } catch (error) {
+    console.error("❌ Registration error:", error);
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again." },
+      { status: 500 }
+    );
   }
 }
