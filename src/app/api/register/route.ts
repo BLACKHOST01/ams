@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { fullName, identifier, email, password, role } = body;
 
     if (!fullName || !identifier || !email || !password || !role) {
-      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+      return NextResponse.json({ error: "All fields are required!." }, { status: 400 });
     }
 
     // Check if email exists
