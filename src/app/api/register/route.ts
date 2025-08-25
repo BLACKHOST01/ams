@@ -1,41 +1,43 @@
-// app/api/register/route.ts
+// app/api/login/route.ts
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { query } from "@/lib/db";   // ✅ match register route
 import bcrypt from "bcrypt";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { fullName, identifier, email, password, role } = body;
+    const { email, password } = await req.json();
 
-    if (!fullName || !identifier || !email || !password || !role) {
-      return NextResponse.json({ error: "All fields are required!." }, { status: 400 });
-    }
-
-    // Check if email exists
-    const emailCheck = await query("SELECT id FROM users WHERE email = $1 LIMIT 1", [email]);
-    if (emailCheck.rows?.length > 0) {
-      return NextResponse.json({ error: "Email already registered." }, { status: 400 });
-    }
-
-    // Check identifier
-    const idCheck = await query("SELECT id FROM users WHERE identifier = $1 LIMIT 1", [identifier]);
-    if (idCheck.rows?.length > 0) {
-      return NextResponse.json({ error: "Identifier already exists." }, { status: 400 });
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insert into DB
-    await query(
-      "INSERT INTO users (full_name, identifier, email, password, role) VALUES ($1, $2, $3, $4, $5)",
-      [fullName, identifier, email, hashedPassword, role]
+    // 🔍 Find user by email OR identifier
+    const result = await query(
+      "SELECT * FROM users WHERE email = $1 OR identifier = $1 LIMIT 1",
+      [email]
     );
 
-    return NextResponse.json({ message: "Account created successfully!" }, { status: 201 });
-  } catch (error) {
-    console.error("❌ Registration error:", error);
-    return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: "User not found." }, { status: 400 });
+    }
+
+    const user = result.rows[0];
+
+    // 🔐 Check password
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
+    }
+
+    // ✅ Success
+    return NextResponse.json({
+      message: "Login successful",
+      user: {
+        id: user.id,
+        fullName: user.full_name,   // ✅ matches register insert
+        identifier: user.identifier,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    return NextResponse.json({ error: "Server error." }, { status: 500 });
   }
 }
