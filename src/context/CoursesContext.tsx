@@ -18,19 +18,14 @@ export type Course = {
 
 type CoursesContextType = {
   courses: Course[];
-  markAttendance: (courseCode: string, method: "biometric" | "qrcode") => void;
+  addCourse: (course: Course) => void; // ✅ Make sure this is here
 };
 
-const CoursesContext = createContext<CoursesContextType>({
-  courses: [],
-  markAttendance: () => {},
-});
+const CoursesContext = createContext<CoursesContextType | undefined>(undefined);
 
-export const useCourses = () => useContext(CoursesContext);
-
-export const CoursesProvider = ({ children }: { children: ReactNode }) => {
+export function CoursesProvider({ children }: { children: ReactNode }) {
   const [courses, setCourses] = useState<Course[]>([
-     {
+    {
       code: "CSC101",
       name: "programming 101",
       attendance: 92,
@@ -48,7 +43,7 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
         { date: "2025-08-02", status: "Present" },
       ],
     },
-      {
+    {
       code: "MTH103",
       name: "Calculus II",
       attendance: 85,
@@ -57,7 +52,7 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
         { date: "2025-08-02", status: "Present" },
       ],
     },
-      {
+    {
       code: "MTH104",
       name: "Calculus II",
       attendance: 85,
@@ -68,39 +63,22 @@ export const CoursesProvider = ({ children }: { children: ReactNode }) => {
     },
   ]);
 
-
-  const markAttendance = (courseCode: string, method: "biometric" | "qrcode") => {
-    setCourses((prev) =>
-      prev.map((course) => {
-        if (course.code === courseCode) {
-          const today = new Date().toISOString().split("T")[0];
-          if (course.history.some((h) => h.date === today)) {
-            toast.error("Attendance already marked today.");
-            return course;
-          }
-          const newHistory: AttendanceRecord = {
-            date: today,
-            status: "Present",
-            method,
-          };
-          const newAttendance = Math.min(
-            100,
-            Math.round(((course.history.length + 1) / (course.history.length + 1)) * 100)
-          );
-          return {
-            ...course,
-            history: [...course.history, newHistory],
-            attendance: newAttendance,
-          };
-        }
-        return course;
-      })
-    );
+  const addCourse = (course: Course) => {
+    setCourses((prev) => [...prev, course]);
+    toast.success(`${course.code} - ${course.name} added`);
   };
 
   return (
-    <CoursesContext.Provider value={{ courses, markAttendance }}>
+    <CoursesContext.Provider value={{ courses, addCourse }}>
       {children}
     </CoursesContext.Provider>
   );
-};
+}
+
+export function useCourses() {
+  const context = useContext(CoursesContext);
+  if (!context) {
+    throw new Error("useCourses must be used within a CoursesProvider");
+  }
+  return context;
+}

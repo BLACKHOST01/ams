@@ -8,11 +8,13 @@ import {
   FaUserGraduate,
   FaChalkboardTeacher,
   FaBars,
+  FaRegistered,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useCourses } from "../../../context/CoursesContext";
 import Link from "next/link";
 import { toast, Toaster } from "react-hot-toast";
+import { Scanner } from "@yudiel/react-qr-scanner"; // ✅ correct
 
 export default function StudentDashboard() {
   const router = useRouter();
@@ -22,9 +24,14 @@ export default function StudentDashboard() {
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  // 🔑 Modal states
+  const [openScanner, setOpenScanner] = useState(false);
+  const [openBiometric, setOpenBiometric] = useState(false);
+
   const activeCourse = courses.find((c) => c.code === selectedCourse);
 
-  const handleMarkAttendance = (method: "biometric" | "qrcode") => {
+  // ✅ Attendance function
+  const confirmAttendance = (method: "biometric" | "qrcode") => {
     if (!activeCourse) return;
 
     const today = new Date().toISOString().split("T")[0];
@@ -38,7 +45,9 @@ export default function StudentDashboard() {
     try {
       markAttendance(activeCourse.code, method);
       toast.success(
-        `Attendance marked via ${method.charAt(0).toUpperCase() + method.slice(1)} for ${activeCourse.code}`
+        `Attendance marked via ${
+          method.charAt(0).toUpperCase() + method.slice(1)
+        }`
       );
     } catch (err) {
       toast.error("Failed to mark attendance. Try again.");
@@ -54,7 +63,9 @@ export default function StudentDashboard() {
       {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 flex flex-col`}
+        ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:translate-x-0 flex flex-col`}
       >
         {/* Logo */}
         <div className="flex items-center space-x-3 p-4 border-b">
@@ -65,15 +76,13 @@ export default function StudentDashboard() {
             <div className="bg-blue-100 p-2 rounded-lg">
               <FaChalkboardTeacher className="text-blue-600 text-xl" />
             </div>
-            <h2 className="text-lg font-bold">AcademyPlus</h2>
+            <h2 className="text-lg font-bold">student Panel</h2>
           </Link>
         </div>
-
-        {/* Register Courses */}
-        <div className="p-4 border-b">
+        <div className="flex items-center space-x-3 p-4 border-b">
           <Link
             href="/student/courses/register"
-            className="flex items-center justify-center gap-2 p-3 bg-green-600 text-white rounded-lg hover:bg-green-500 transition"
+            className="flex items-center gap-2 text-gray-800 hover:text-blue-600 transition"
           >
             <span className="text-sm font-bold">Register New Courses</span>
           </Link>
@@ -82,7 +91,7 @@ export default function StudentDashboard() {
         {/* My Courses */}
         <div className="p-4 text-center">
           <h2 className="text-md font-semibold flex items-center justify-center gap-2 text-gray-700">
-            <FaUserGraduate /> My Courses
+            <FaBookOpen /> My Courses
           </h2>
         </div>
 
@@ -142,126 +151,131 @@ export default function StudentDashboard() {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col p-4 sm:p-6 md:p-8 space-y-6">
-        {/* Mobile Toggle */}
-        <header className="bg-white shadow p-4 flex items-center justify-between md:hidden rounded-md">
-          <button
-            className="text-gray-700 p-2 rounded-md shadow-sm bg-white hover:bg-gray-50 transition"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open sidebar"
-          >
-            <FaBars size={20} />
-          </button>
-          <span className="text-lg text-blue-800 font-semibold truncate">
-            {activeCourse?.code || ""}
-          </span>
-        </header>
+      <main className="flex-1 p-6 overflow-y-auto">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="md:hidden mb-4 p-2 bg-blue-700 text-white rounded"
+        >
+          <FaBars />
+        </button>
 
-        {activeCourse ? (
-          <div className="space-y-6">
-            {/* Course Header */}
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex flex-col sm:flex-row sm:items-center gap-2 overflow-hidden">
-              <FaBookOpen className="text-blue-600" />
-              <span className="truncate overflow-hidden">
-                {activeCourse.code} - {activeCourse.name}
-              </span>
-            </h1>
+        <h2 className="text-3xl font-bold mb-6">Student Dashboard</h2>
+
+        {/* Course Selector */}
+        <div className="mb-6">
+          <label className="block mb-2 font-medium">Select Course:</label>
+          <select
+            value={selectedCourse}
+            onChange={(e) => setSelectedCourse(e.target.value)}
+            className="border rounded-lg p-2 w-full"
+          >
+            {courses.map((course) => (
+              <option key={course.code} value={course.code}>
+                {course.name} ({course.code})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Course Info */}
+        {activeCourse && (
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-bold mb-2">{activeCourse.name}</h3>
+            <p className="text-gray-600 mb-4">Code: {activeCourse.code}</p>
+
+            {/* Attendance Buttons */}
+            <div className="space-x-4 mb-4">
+              <button
+                onClick={() => setOpenBiometric(true)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                Mark via Biometric
+              </button>
+              <button
+                onClick={() => setOpenScanner(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Mark via QR Code
+              </button>
+            </div>
 
             {/* Attendance History */}
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6">
-              <h2 className="text-lg font-semibold flex items-center gap-2 mb-4 text-gray-700">
-                <FaCalendarCheck className="text-blue-600" /> Attendance History
-              </h2>
-
-              {/* Desktop Table */}
-              <div className="hidden sm:block overflow-x-auto">
-                <table className="w-full min-w-[360px] text-left border text-sm sm:text-base">
-                  <thead>
-                    <tr className="bg-gray-100 text-gray-800">
-                      <th className="p-2 border">Date</th>
-                      <th className="p-2 border">Status</th>
-                      <th className="p-2 border">Method</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {activeCourse.history.map((entry, i) => (
-                      <tr key={i} className="hover:bg-gray-50 transition">
-                        <td className="p-2 border">{entry.date}</td>
-                        <td
-                          className={`p-2 border font-medium ${
-                            entry.status === "Present"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {entry.status}
-                        </td>
-                        <td className="p-2 border text-gray-600 capitalize">
-                          {entry.method || "N/A"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Mobile Card */}
-              <div className="sm:hidden text-gray-600 flex flex-col gap-4">
-                {activeCourse.history.map((entry, i) => (
-                  <div
-                    key={i}
-                    className="bg-gray-50 p-3 rounded-lg shadow-sm flex flex-col gap-1"
-                  >
-                    <div className="flex justify-between text-sm">
-                      <span className="font-semibold">Date:</span>
-                      <span>{entry.date}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="font-semibold">Status:</span>
-                      <span
-                        className={
-                          entry.status === "Present"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }
-                      >
-                        {entry.status}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="font-semibold">Method:</span>
-                      <span className="capitalize">{entry.method || "N/A"}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Mark Attendance */}
-            <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col md:flex-row flex-wrap justify-between items-stretch gap-4">
-              <p className="text-gray-700 text-center md:text-left flex-1">
-                Mark your attendance for today’s class
-              </p>
-              <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 w-full sm:w-auto">
-                <button
-                  onClick={() => handleMarkAttendance("biometric")}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
-                >
-                  Biometric
-                </button>
-                <button
-                  onClick={() => handleMarkAttendance("qrcode")}
-                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition w-full sm:w-auto"
-                >
-                  QR Code
-                </button>
-              </div>
-            </div>
+            <h4 className="font-semibold mb-2">Attendance History</h4>
+            <ul className="space-y-1">
+              {activeCourse.history.length > 0 ? (
+                activeCourse.history.map((h, i) => (
+                  <li key={i} className="text-gray-700">
+                    {h.date} - {h.method}
+                  </li>
+                ))
+              ) : (
+                <li className="text-gray-500">No attendance records yet.</li>
+              )}
+            </ul>
           </div>
-        ) : (
-          <p className="text-gray-600">Select a course from the sidebar</p>
         )}
       </main>
+
+      {/* QR Code Scanner Modal */}
+      {/* QR Code Scanner Modal */}
+      {openScanner && activeCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+          <div className="bg-white rounded-lg p-4 shadow-lg w-[90%] sm:w-[400px]">
+            <h2 className="font-semibold mb-2">Scan QR Code</h2>
+
+            <Scanner
+              onScan={(results) => {
+                if (results && results[0]?.rawValue) {
+                  const scannedValue = results[0].rawValue.trim();
+                  const today = new Date().toISOString().split("T")[0];
+                  const expectedQR = `${activeCourse.code}-${today}`;
+
+                  if (scannedValue === expectedQR) {
+                    confirmAttendance("qrcode");
+                    setOpenScanner(false);
+                  } else {
+                    toast.error("Invalid or expired QR Code.");
+                  }
+                }
+              }}
+              onError={(err) => console.error("QR Scanner error:", err)}
+              constraints={{ facingMode: "environment" }}
+            />
+
+            <button
+              onClick={() => setOpenScanner(false)}
+              className="mt-3 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Biometric Modal */}
+      {openBiometric && activeCourse && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-40">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-[90%] sm:w-[400px] text-center">
+            <h2 className="font-semibold mb-4">Biometric Authentication</h2>
+            <p className="mb-4">Simulated biometric scan...</p>
+            <button
+              onClick={() => {
+                confirmAttendance("biometric");
+                setOpenBiometric(false);
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            >
+              Confirm Biometric
+            </button>
+            <button
+              onClick={() => setOpenBiometric(false)}
+              className="ml-3 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
