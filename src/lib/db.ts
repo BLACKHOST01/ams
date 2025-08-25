@@ -1,12 +1,28 @@
 import { Pool } from "pg";
+import { neon } from "@neondatabase/serverless";
 
-const pool = new Pool({
-  user: "school_admin",
-  host: "localhost",
-  database: "school_attendance",
-  password: "iamsheyin",
-  port: 5432,
-});
+// Decide which client to use
+let client: any;
+let isNeon = false;
 
-export default pool;
-// Note: Replace "yourpassword" with the actual password for the "school_admin" user. Ensure your PostgreSQL server is running and accessible.
+if (process.env.VERCEL) {
+  // Running on Vercel → use Neon
+  client = neon(process.env.DATABASE_URL!);
+  isNeon = true;
+} else {
+  // Running locally → use pg Pool
+  client = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: false, // local dev usually doesn't use SSL
+  });
+}
+
+// Unified query function
+export async function query(text: string, params?: any[]) {
+  if (isNeon) {
+    // Convert $1, $2 placeholders into actual params for Neon
+    return await client(text, params);
+  } else {
+    return await client.query(text, params);
+  }
+}
