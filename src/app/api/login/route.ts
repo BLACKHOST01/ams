@@ -1,7 +1,9 @@
 // app/api/login/route.ts
 import { NextResponse } from "next/server";
-import { query } from "@/lib/db";   // ✅ match register route
-import bcrypt from "bcrypt";
+import { query } from "@/lib/db";
+import bcrypt from "bcryptjs";   // ✅ use bcryptjs instead
+
+export const runtime = "nodejs"; // ✅ force Node runtime (not Edge)
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +15,7 @@ export async function POST(req: Request) {
       [email]
     );
 
-    if (result.rows.length === 0) {
+    if (!result.rows || result.rows.length === 0) {
       return NextResponse.json({ error: "User not found." }, { status: 400 });
     }
 
@@ -30,7 +32,7 @@ export async function POST(req: Request) {
       message: "Login successful",
       user: {
         id: user.id,
-        fullName: user.full_name,   // ✅ matches register insert
+        fullName: user.full_name,
         identifier: user.identifier,
         email: user.email,
         role: user.role,
