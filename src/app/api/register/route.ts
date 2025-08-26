@@ -10,15 +10,16 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { fullName, identifier, email, password, role } = body;
 
-    // ✅ Validate required fields
     if (!fullName || !identifier || !email || !password || !role) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
 
     // 🔍 Check if user already exists
     const existing = await query(
-      "SELECT * FROM users WHERE email = $1 OR identifier = $2 LIMIT 1",
-      [email, identifier]
+      process.env.VERCEL
+        ? `SELECT * FROM users WHERE email = '${email}' OR identifier = '${identifier}' LIMIT 1`
+        : "SELECT * FROM users WHERE email = $1 OR identifier = $2 LIMIT 1",
+      process.env.VERCEL ? [] : [email, identifier]
     );
 
     if (existing.rows.length > 0) {
@@ -30,15 +31,18 @@ export async function POST(req: Request) {
 
     // 📝 Insert new user
     const result = await query(
-      `INSERT INTO users (full_name, identifier, email, password, role)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, full_name, identifier, email, role`,
-      [fullName, identifier, email, hashedPassword, role]
+      process.env.VERCEL
+        ? `INSERT INTO users (full_name, identifier, email, password, role)
+           VALUES ('${fullName}', '${identifier}', '${email}', '${hashedPassword}', '${role}')
+           RETURNING id, full_name, identifier, email, role`
+        : `INSERT INTO users (full_name, identifier, email, password, role)
+           VALUES ($1, $2, $3, $4, $5)
+           RETURNING id, full_name, identifier, email, role`,
+      process.env.VERCEL ? [] : [fullName, identifier, email, hashedPassword, role]
     );
 
     const user = result.rows[0];
 
-    // ✅ Success
     return NextResponse.json(
       {
         message: "User registered successfully",

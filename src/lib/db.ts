@@ -1,48 +1,36 @@
+// lib/db.ts
 import { Pool } from "pg";
 import { neon } from "@neondatabase/serverless";
 
-let client: any;
-let isNeon = false;
+const isNeon = !!process.env.VERCEL; // Detect Vercel env
 
-export function getClient() {
-  if (!client) {
-    if (process.env.VERCEL) {
-      if (!process.env.DATABASE_URL) {
-        throw new Error("❌ DATABASE_URL not set in environment variables");
-      }
-      client = neon(process.env.DATABASE_URL); // Neon SQL client
-      isNeon = true;
-    } else {
-      client = new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-      });
-    }
-  }
-  return client;
+let pool: Pool | null = null;
+let neonClient: any = null;
+
+if (isNeon) {
+  neonClient = neon(process.env.DATABASE_URL!);
+} else {
+  pool = new Pool({ connectionString: process.env.DATABASE_URL });
 }
 
-export async function query(text: string, params: any[] = []) {
-  const client = getClient();
-
+/**
+ * Unified query function
+ * Always call it with `query("SELECT ... WHERE id = $1", [id])`
+ */
+export async function query(sql: string, params: any[] = []) {
   if (isNeon) {
-    // Convert `$1, $2...` into Neon template literal with params
-    // Example: "SELECT * FROM users WHERE email = $1 AND role = $2"
-    const parts = text.split(/\$\d+/); // split on $1, $2...
-    let sqlQuery = client``; // start with empty template literal
-
-    parts.forEach((part, i) => {
-      if (i < params.length) {
-        sqlQuery = client`${sqlQuery}${part}${params[i]}`;
-      } else {
-        sqlQuery = client`${sqlQuery}${part}`;
-      }
+    // 🚀 Convert `$1, $2...` to interpolated values for Neon
+    let finalSQL = sql;
+    params.forEach((p, i) => {
+      const value =
+        typeof p === "string" ? `'${p.replace(/'/g, "''")}'` : p; // escape strings
+      finalSQL = finalSQL.replace(new RegExp(`\\$${i + 1}`, "g"), value);
     });
 
-    const rows = await sqlQuery;
+    const rows = await neonClient(finalSQL);
     return { rows };
   } else {
-    const result = await client.query(text, params);
-    return result;
+    // Local dev with pg
+    return pool!.query(sql, params);
   }
 }
