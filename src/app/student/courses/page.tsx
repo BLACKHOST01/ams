@@ -204,7 +204,7 @@ export default function StudentDashboard() {
             <ul className="space-y-1">
               {activeCourse.history.length > 0 ? (
                 activeCourse.history.map((h, i) => (
-                  <li key={i} className="text-gray-700">
+                  <li key={i} className="text-gray-600">
                     {h.date} - {h.method}
                   </li>
                 ))
