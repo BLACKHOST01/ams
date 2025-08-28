@@ -59,11 +59,11 @@ export default function RegisterPage() {
 
         setTimeout(() => {
           if (user.role === "student") {
-            router.push(`/student/[id]/${user.identifier}`);
+            router.push(`/student/${data.user.identifier}`);
           } else if (user.role === "lecturer") {
-            router.push(`/lecturer/${user.identifier}`);
+            router.push(`/lecturer/${data.user.identifier}`);
           } else if (user.role === "admin") {
-            router.push(`/admin/${user.identifier}`);
+            router.push(`/admin/${data.user.identifier}`);
           }
         }, 2000);
       } else {
