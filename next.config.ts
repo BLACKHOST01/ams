@@ -14,4 +14,7 @@ module.exports = {
     // Also disable TypeScript ESLint if needed
     ignoreBuildErrors: true,
   },
+   env: {
+    DATABASE_URL: process.env.DATABASE_URL,
+  },
 }

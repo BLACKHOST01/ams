@@ -4,12 +4,13 @@ import { query } from "@/lib/db";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  try {
-    const { id } = params;
+  // You MUST await params first
+  const { params } = await context;
+  const { id } = await params;
 
-    // Fetch student by identifier (NOT numeric DB id)
+  try {
     const result = await query(
       `SELECT id, full_name, identifier, email, role
        FROM users
