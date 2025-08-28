@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  FaBookOpen,
-  FaCalendarCheck,
-  FaSignOutAlt,
-  FaUserGraduate,
-  FaChalkboardTeacher,
-  FaBars,
-  FaRegistered,
-} from "react-icons/fa";
+import { FaBookOpen } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useCourses } from "../../../context/CoursesContext";
 import Link from "next/link";
@@ -62,23 +54,12 @@ export default function StudentDashboard() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
+        className={`fixed inset-y-0 left-0 border border-blue-500 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
         ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 flex flex-col`}
       >
-        {/* Logo */}
-        <div className="flex items-center space-x-3 p-4 border-b">
-          <Link
-            href="/student/dashboard"
-            className="flex items-center gap-2 text-gray-800 hover:text-blue-600 transition"
-          >
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <FaChalkboardTeacher className="text-blue-600 text-xl" />
-            </div>
-            <h2 className="text-lg font-bold">student Panel</h2>
-          </Link>
-        </div>
+        {/* register new courses */}
         <div className="flex items-center space-x-3 p-4 border-b">
           <Link
             href="/student/courses/register"
@@ -129,38 +110,12 @@ export default function StudentDashboard() {
               </span>
             </button>
           ))}
-
-          {/* Logout */}
-          <div className="p-4 border-t">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
-            >
-              <FaSignOutAlt /> Logout
-            </button>
-          </div>
         </nav>
       </aside>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-20 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
-
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-y-auto">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden mb-4 p-2 bg-blue-700 text-white rounded"
-        >
-          <FaBars />
-        </button>
-
-        <h2 className="text-3xl font-bold mb-6">Student Dashboard</h2>
-
+       
         {/* Course Selector */}
         <div className="mb-6">
           <label className="block mb-2 font-medium">Select Course:</label>

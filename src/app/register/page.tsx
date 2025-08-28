@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaUserGraduate, FaEnvelope, FaLock, FaUserShield } from "react-icons/fa";
+import {
+  FaUserGraduate,
+  FaEnvelope,
+  FaLock,
+  FaUserShield,
+} from "react-icons/fa";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -49,8 +54,18 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
+        const { user } = data;
         setSuccess("Account created successfully! Redirecting...");
-        setTimeout(() => router.push("/login"), 2000);
+
+        setTimeout(() => {
+          if (user.role === "student") {
+            router.push(`/student/[id]/${user.identifier}`);
+          } else if (user.role === "lecturer") {
+            router.push(`/lecturer/${user.identifier}`);
+          } else if (user.role === "admin") {
+            router.push(`/admin/${user.identifier}`);
+          }
+        }, 2000);
       } else {
         setError(data.error || "Registration failed. Try again.");
       }

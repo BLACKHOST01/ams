@@ -35,11 +35,11 @@ export default function LoginPage() {
 
         // ✅ Redirect based on role
         if (data.user.role === "student") {
-          router.push("/student/dashboard");
+          router.push(`/student/${data.user.identifier}`);
         } else if (data.user.role === "lecturer") {
-          router.push("/lecturer/dashboard");
+          router.push("/lecturer/${data.user.identifier}");
         } else if (data.user.role === "admin") {
-          router.push("/admin/dashboard");
+          router.push("/admin/${data.user.identifier}");
         }
       } else {
         setErrorMsg(data.error || "Invalid email or password.");
