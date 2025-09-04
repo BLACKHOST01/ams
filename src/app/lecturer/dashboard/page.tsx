@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import { useCourses } from "../../../context/CoursesContext";
 import { toast, Toaster } from "react-hot-toast";
-import { QRCodeCanvas } from "qrcode.react"; // ✅ use QRCodeCanvas
+import { QRCodeCanvas } from "qrcode.react";
 
 export default function LecturerDashboard() {
   const router = useRouter();
@@ -43,63 +43,55 @@ export default function LecturerDashboard() {
         className={`fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:relative md:translate-x-0 flex flex-col`}
       >
-        {/* Logo */}
-        <div className="flex items-center space-x-3 p-4 border-b">
-          <Link
-            href="/lecturer/dashboard"
-            className="flex items-center gap-2 text-gray-800 hover:text-blue-600 transition"
-          >
-            <div className="bg-blue-100 p-2 rounded-lg">
-              <FaChalkboardTeacher className="text-blue-600 text-xl" />
-            </div>
-            <h2 className="text-lg font-bold">Lecturer Panel</h2>
-          </Link>
-        </div>
-
-        {/* My Courses */}
-        <div className="p-4 text-center">
+        {/* Sidebar Header */}
+        <div className="p-4 text-center border-b">
           <h2 className="text-md font-semibold flex items-center justify-center gap-2 text-gray-700">
-            <FaBookOpen /> My Courses
+            <FaBookOpen /> Mark Attendance
           </h2>
         </div>
 
         {/* Courses List */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {courses.map((course) => (
-            <button
-              key={course.code}
-              role="menuitem"
-              onClick={() => {
-                setSelectedCourse(course.code);
-                setSidebarOpen(false); // Close sidebar on mobile
-              }}
-              className={`w-full text-left px-3 py-2 rounded-md flex justify-between items-center transition ${
-                selectedCourse === course.code
-                  ? "bg-blue-100 text-blue-700 font-semibold"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <span>
-                {course.code}
-                <br />
-                <span className="text-xs text-gray-500">{course.name}</span>
-              </span>
-              <span className="text-sm font-bold text-gray-500">
-                {course.attendance}%
-              </span>
-            </button>
-          ))}
-
-          {/* Logout */}
-          <div className="p-4 border-t">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center gap-2 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition"
-            >
-              <FaSignOutAlt /> Logout
-            </button>
-          </div>
+          {courses.map((course) => {
+            const today = new Date().toISOString().split("T")[0];
+            return (
+              <div
+                key={course.code}
+                className={`w-full px-3 py-2 rounded-md flex justify-between items-center transition ${
+                  selectedCourse === course.code
+                    ? "bg-blue-100 text-blue-700 font-semibold"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                <div
+                  onClick={() => {
+                    setSelectedCourse(course.code);
+                    setSidebarOpen(false);
+                  }}
+                  className="cursor-pointer"
+                >
+                  {course.code}
+                  <br />
+                  <span className="text-xs text-gray-500">{course.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-gray-500">
+                    {course.attendance}%
+                  </span>
+                  {/* QR Button with Tooltip */}
+                  <button
+                    onClick={() => setQrOpen(true)}
+                    title={`QR valid for today: ${today}`}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <FaQrcode />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </nav>
+
       </aside>
 
       {/* Overlay for mobile */}
@@ -238,7 +230,7 @@ export default function LecturerDashboard() {
               QR Code for {activeCourse.code}
             </h2>
             <QRCodeCanvas
-              value={getSessionQR(activeCourse.code)} // ✅ switched to QRCodeCanvas
+              value={getSessionQR(activeCourse.code)}
               size={220}
               className="mx-auto"
             />
