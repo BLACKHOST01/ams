@@ -5,6 +5,19 @@ import bcrypt from "bcryptjs";
 
 export const runtime = "nodejs";
 
+// Helper: map DB user (snake_case) → API user (camelCase)
+function mapUser(dbUser: any) {
+  return {
+    id: dbUser.id,
+    fullName: dbUser.full_name,
+    identifier: dbUser.identifier,
+    email: dbUser.email,
+    role: dbUser.role,
+    createdAt: dbUser.created_at,
+    updatedAt: dbUser.updated_at,
+  };
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -34,14 +47,14 @@ export async function POST(req: Request) {
       process.env.DATABASE_URL?.includes("vercel")
         ? `INSERT INTO users (full_name, identifier, email, password, role)
            VALUES ('${fullName}', '${identifier}', '${email}', '${hashedPassword}', '${role}')
-           RETURNING id, full_name, identifier, email, role`
+           RETURNING *`
         : `INSERT INTO users (full_name, identifier, email, password, role)
            VALUES ($1, $2, $3, $4, $5)
-           RETURNING id, full_name, identifier, email, role`,
+           RETURNING *`,
       process.env.DATABASE_URL?.includes("vercel") ? [] : [fullName, identifier, email, hashedPassword, role]
     );
 
-    const user = result.rows[0];
+    const user = mapUser(result.rows[0]);
 
     return NextResponse.json(
       {
