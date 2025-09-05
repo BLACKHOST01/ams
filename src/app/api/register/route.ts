@@ -16,10 +16,10 @@ export async function POST(req: Request) {
 
     // 🔍 Check if user already exists
     const existing = await query(
-      process.env.VERCEL
+      process.env.DATABASE_URL?.includes("vercel")
         ? `SELECT * FROM users WHERE email = '${email}' OR identifier = '${identifier}' LIMIT 1`
         : "SELECT * FROM users WHERE email = $1 OR identifier = $2 LIMIT 1",
-      process.env.VERCEL ? [] : [email, identifier]
+      process.env.DATABASE_URL?.includes("vercel") ? [] : [email, identifier]
     );
 
     if (existing.rows.length > 0) {
@@ -31,14 +31,14 @@ export async function POST(req: Request) {
 
     // 📝 Insert new user
     const result = await query(
-      process.env.VERCEL
+      process.env.DATABASE_URL?.includes("vercel")
         ? `INSERT INTO users (full_name, identifier, email, password, role)
            VALUES ('${fullName}', '${identifier}', '${email}', '${hashedPassword}', '${role}')
            RETURNING id, full_name, identifier, email, role`
         : `INSERT INTO users (full_name, identifier, email, password, role)
            VALUES ($1, $2, $3, $4, $5)
            RETURNING id, full_name, identifier, email, role`,
-      process.env.VERCEL ? [] : [fullName, identifier, email, hashedPassword, role]
+      process.env.DATABASE_URL?.includes("vercel") ? [] : [fullName, identifier, email, hashedPassword, role]
     );
 
     const user = result.rows[0];
